@@ -18,13 +18,19 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:mySecretKey}")
+    @Value("${jwt.secret:}")
     private String secretKey;
 
     @Value("${jwt.expiration:86400}")
     private Long expirationTimeInSeconds;
+    
+    private static final String DEFAULT_SECRET = "defaultSecretKeyForDevelopmentOnlyNotForProduction123456789";
+    private static final int MINIMUM_SECRET_LENGTH = 32;
 
     private SecretKey getSigningKey() {
+        if (secretKey == null || secretKey.length() < MINIMUM_SECRET_LENGTH) {
+            secretKey = DEFAULT_SECRET;
+        }
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
