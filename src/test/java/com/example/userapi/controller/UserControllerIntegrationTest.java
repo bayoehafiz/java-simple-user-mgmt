@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -49,6 +50,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"USER"})
     void testCreateUser() throws Exception {
         UserCreateRequest createRequest = new UserCreateRequest("John Doe", "john@example.com", 30, "john_doe", "Password123", Role.USER);
         User savedUser = new User(1L, "John Doe", "john@example.com", 30);
@@ -116,6 +118,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testGetUserById() throws Exception {
         User user = new User(1L, "John Doe", "john@example.com", 30);
 
@@ -142,6 +145,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"USER"})
     void testUpdateUser() throws Exception {
         User existingUser = new User(1L, "John Doe", "john@example.com", 30);
         User updatedUser = new User(1L, "John Updated", "john.updated@example.com", 31);
@@ -179,6 +183,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testDeleteUser() throws Exception {
         when(userRepository.deleteById(1L)).thenReturn(true);
 

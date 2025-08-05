@@ -47,7 +47,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    private Claims parseTokenToClaims(String token) {
+    public Claims parseTokenToClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -55,7 +55,7 @@ public class JwtUtil {
                 .getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 

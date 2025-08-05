@@ -26,7 +26,7 @@ A comprehensive RESTful API built with Spring Boot for managing user data with f
 - JSON request/response format
 - **Docker containerization**
 - **Environment-based configuration**
-- **Comprehensive test coverage** (52+ tests)
+- **Comprehensive test coverage** (70+ tests including JWT security tests)
 - **Production-ready setup**
 - **Health checks**
 - **Complete Postman collection for API testing**
@@ -51,12 +51,14 @@ A comprehensive RESTful API built with Spring Boot for managing user data with f
     │   │       └── example/
     │   │           └── userapi/
     │   │               ├── UserApiApplication.java     # Main application class
-    │   │               ├── controller/
-    │   │               │   └── UserController.java    # REST API endpoints
-    │   │               ├── model/
-    │   │               │   └── User.java              # User data model
-    │   │               └── repository/
-    │   │                   └── UserRepository.java    # Data access layer
+│   │               ├── controller/
+│   │               │   └── UserController.java    # REST API endpoints
+│   │               ├── model/
+│   │               │   └── User.java              # User data model
+│   │               ├── repository/
+│   │               │   └── UserRepository.java    # Data access layer
+│   │               └── security/
+│   │                   └── JwtUtil.java           # JWT token management
     │   └── resources/
     │       └── application.properties                  # Spring Boot configuration
     └── test/
@@ -68,8 +70,11 @@ A comprehensive RESTful API built with Spring Boot for managing user data with f
                         │   └── UserControllerIntegrationTest.java  # Controller tests
                         ├── integration/
                         │   └── UserApiIntegrationTest.java         # Full integration tests
-                        └── repository/
-                            └── UserRepositoryTest.java             # Repository unit tests
+                        ├── repository/
+                        │   ├── UserRepositoryTest.java             # Repository unit tests
+                        │   └── FindByUsernameIntegrationTest.java  # Username search tests
+                        └── security/
+                            └── JwtUtilTest.java                     # JWT security tests
 ```
 
 ## 📋 Requirements
@@ -400,22 +405,31 @@ The API returns appropriate HTTP status codes:
 
 ## 🧪 Testing
 
-The project includes comprehensive test coverage with **38 tests** across three categories:
+The project includes comprehensive test coverage with **70+ tests** across four categories:
 
-### Unit Tests (19 tests)
-- **UserRepositoryTest**: Repository layer testing with edge cases
+### Repository Tests (42 tests)
+- **UserRepositoryTest**: Repository layer testing with edge cases (32 tests)
+- **FindByUsernameIntegrationTest**: Username search functionality (10 tests)
 - Tests for CRUD operations, data validation, and error handling
 - Coverage for null values, special characters, and boundary conditions
+
+### Security Tests (19 tests)
+- **JwtUtilTest**: Comprehensive JWT utility testing
+- Token generation, validation, expiration handling
+- Security scenarios: malformed tokens, wrong signatures, expired tokens
+- Edge cases: special characters, long usernames, Unicode support
+- Authentication and authorization flow testing
 
 ### Integration Tests (5 tests)
 - **UserApiIntegrationTest**: Full end-to-end API testing
 - Real HTTP requests with TestRestTemplate
 - Complete application context testing
 
-### Controller Tests (14 tests)
-- **UserControllerIntegrationTest**: MockMvc-based controller testing
+### Controller Tests (14+ tests)
+- **UserControllerIntegrationTest**: MockMvc-based controller testing with security annotations
 - JSON serialization/deserialization validation
 - HTTP status code and error handling verification
+- Role-based access control testing with `@WithMockUser`
 
 ### Run Tests
 ```bash
@@ -453,9 +467,28 @@ Import the Postman collection for easy API testing:
 - The file is created automatically if it doesn't exist
 - Docker volumes ensure data persistence across container restarts
 
-## 🎉 Recent Enhancements (v0.2.0)
+## 🎉 Recent Enhancements (v0.3.0)
 
-### Security & Configuration Improvements
+### Security & Testing Improvements
+- ✅ **Enhanced JWT Utility** with comprehensive token management
+  - Token generation, validation, and expiration handling
+  - Role-based JWT tokens with custom claims
+  - Secure signature verification and clock skew handling
+- ✅ **Expanded Test Coverage** (70+ tests)
+  - Comprehensive JWT security testing suite
+  - Enhanced repository testing with edge cases
+  - Role-based access control testing with Spring Security annotations
+  - Authentication flow testing with proper mocking
+- ✅ **Improved Security Testing**
+  - `@WithMockUser` annotations for role-based testing
+  - Security-aware integration tests
+  - Comprehensive JWT validation scenarios
+- ✅ **Production-Ready JWT Configuration**
+  - Environment-based secret management
+  - Configurable token expiration
+  - Enhanced error handling for authentication failures
+
+### Previous Enhancements (v0.2.0)
 - ✅ **Upgraded to Java 17** (LTS) for better performance and security
 - ✅ **Enhanced JWT Security** with environment-based secret management
 - ✅ **Improved Security Headers** with HSTS and content type options
