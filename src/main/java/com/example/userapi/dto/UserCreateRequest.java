@@ -1,12 +1,13 @@
-package com.example.userapi.model;
+package com.example.userapi.dto;
 
+import com.example.userapi.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.*;
-import javax.validation.Valid;
 
-public class User {
-    @JsonProperty("id")
-    private Long id;
+/**
+ * DTO for user creation requests with validation.
+ */
+public class UserCreateRequest {
     
     @JsonProperty("name")
     @NotBlank(message = "Name is mandatory")
@@ -30,52 +31,30 @@ public class User {
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain letters, numbers, and underscores")
     private String username;
     
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty("password")
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", 
+             message = "Password must contain at least one lowercase letter, one uppercase letter, and one digit")
     private String password;
     
     @JsonProperty("role")
-    private Role role;
-    
-    @JsonProperty("enabled")
-    private boolean enabled;
+    private Role role = Role.USER; // Default role
 
     // Default constructor
-    public User() {
-        this.enabled = true;
-        this.role = Role.USER; // Default role
-    }
+    public UserCreateRequest() {}
 
-    // Constructor with parameters
-    public User(Long id, String name, String email, Integer age) {
-        this();
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.age = age;
-    }
-    
-    // Constructor with authentication parameters
-    public User(String name, String email, Integer age, String username, String password, Role role) {
-        this();
+    // Constructor
+    public UserCreateRequest(String name, String email, Integer age, String username, String password, Role role) {
         this.name = name;
         this.email = email;
         this.age = age;
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.role = role != null ? role : Role.USER;
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -99,46 +78,28 @@ public class User {
     public void setAge(Integer age) {
         this.age = age;
     }
-    
+
     public String getUsername() {
         return username;
     }
-    
+
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     public String getPassword() {
         return password;
     }
-    
+
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public Role getRole() {
         return role;
     }
-    
-    public void setRole(Role role) {
-        this.role = role;
-    }
-    
-    public boolean isEnabled() {
-        return enabled;
-    }
-    
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", age=" + age +
-                '}';
+    public void setRole(Role role) {
+        this.role = role != null ? role : Role.USER;
     }
 }
