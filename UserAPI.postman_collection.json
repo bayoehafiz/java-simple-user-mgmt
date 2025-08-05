@@ -138,6 +138,100 @@
                     ]
                 }
             }
+        },
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/actuator/health",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "actuator",
+                        "health"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Application Info",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/actuator/info",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "actuator",
+                        "info"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Application Metrics",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/actuator/metrics",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "actuator",
+                        "metrics"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Environment Properties",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/actuator/env",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "actuator",
+                        "env"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Actuator Discovery",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/actuator",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "actuator"
+                    ]
+                }
+            }
         }
     ]
 }
