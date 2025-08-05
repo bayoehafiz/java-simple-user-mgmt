@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+docs/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build files (except target JAR)
+target/classes/
+target/test-classes/
+target/maven-archiver/
+target/maven-status/
+target/generated-sources/
+target/generated-test-sources/
+
+# Keep the JAR file
+!target/*.jar
+
+# Environment files
+.env*
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Test reports
+target/surefire-reports/
+target/site/
