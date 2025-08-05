@@ -68,6 +68,12 @@ public class UserRepository {
         return removed;
     }
     
+    public void deleteAll() {
+        users.clear();
+        idCounter.set(1);
+        saveUsersToFile();
+    }
+    
     public Optional<User> findByUsername(String username) {
         return users.stream()
             .filter(user -> username != null && username.equals(user.getUsername()))

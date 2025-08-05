@@ -1,6 +1,10 @@
 package com.example.userapi.controller;
 
+import com.example.userapi.config.TestSecurityConfig;
+import com.example.userapi.dto.UserCreateRequest;
+import com.example.userapi.dto.UserUpdateRequest;
 import com.example.userapi.model.User;
+import com.example.userapi.model.Role;
 import com.example.userapi.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -23,6 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 class UserControllerIntegrationTest {
 
     @Autowired
@@ -42,14 +50,14 @@ class UserControllerIntegrationTest {
 
     @Test
     void testCreateUser() throws Exception {
-        User user = new User(null, "John Doe", "john@example.com", 30);
+        UserCreateRequest createRequest = new UserCreateRequest("John Doe", "john@example.com", 30, "john_doe", "Password123", Role.USER);
         User savedUser = new User(1L, "John Doe", "john@example.com", 30);
 
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("John Doe"))
@@ -61,22 +69,21 @@ class UserControllerIntegrationTest {
 
     @Test
     void testCreateUserWithInvalidData() throws Exception {
-        // Test with empty request body
+        // Test with empty request body - should fail validation
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
-                .andExpect(status().isCreated()); // Should still work with null values
+                .andExpect(status().isBadRequest());
 
-        // Test with null values
-        User userWithNulls = new User(null, null, null, null);
-        User savedUserWithNulls = new User(1L, null, null, null);
-        when(userRepository.save(any(User.class))).thenReturn(savedUserWithNulls);
+        // Test with incomplete data - should fail validation
+        UserCreateRequest incompleteRequest = new UserCreateRequest();
+        incompleteRequest.setName("Test");
+        // Missing required fields
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userWithNulls)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                        .content(objectMapper.writeValueAsString(incompleteRequest)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -138,13 +145,14 @@ class UserControllerIntegrationTest {
     void testUpdateUser() throws Exception {
         User existingUser = new User(1L, "John Doe", "john@example.com", 30);
         User updatedUser = new User(1L, "John Updated", "john.updated@example.com", 31);
+        UserUpdateRequest updateRequest = new UserUpdateRequest("John Updated", "john.updated@example.com", 31);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenReturn(updatedUser);
 
         mockMvc.perform(put("/api/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedUser)))
+                        .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("John Updated"))
@@ -157,13 +165,13 @@ class UserControllerIntegrationTest {
 
     @Test
     void testUpdateUserNotFound() throws Exception {
-        User updatedUser = new User(999L, "Non Existent", "nonexistent@example.com", 25);
+        UserUpdateRequest updateRequest = new UserUpdateRequest("Non Existent", "nonexistent@example.com", 25);
 
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/api/users/999")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedUser)))
+                        .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isNotFound());
 
         verify(userRepository, times(1)).findById(999L);
@@ -192,14 +200,14 @@ class UserControllerIntegrationTest {
 
     @Test
     void testCreateUserWithSpecialCharacters() throws Exception {
-        User user = new User(null, "José María", "test+special@email.com", 25);
+        UserCreateRequest createRequest = new UserCreateRequest("José María", "test+special@email.com", 25, "jose_maria", "Password123", Role.USER);
         User savedUser = new User(1L, "José María", "test+special@email.com", 25);
 
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("José María"))
                 .andExpect(jsonPath("$.email").value("test+special@email.com"));
@@ -209,18 +217,13 @@ class UserControllerIntegrationTest {
     void testCreateUserWithLongFields() throws Exception {
         String longName = "A".repeat(1000);
         String longEmail = "test@" + "a".repeat(240) + ".com";
-        User user = new User(null, longName, longEmail, 100);
-        User savedUser = new User(1L, longName, longEmail, 100);
+        UserCreateRequest createRequest = new UserCreateRequest(longName, longEmail, 100, "longuser", "Password123", Role.USER);
 
-        when(userRepository.save(any(User.class))).thenReturn(savedUser);
-
+        // Should fail validation due to field length constraints
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(longName))
-                .andExpect(jsonPath("$.email").value(longEmail))
-                .andExpect(jsonPath("$.age").value(100));
+                        .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

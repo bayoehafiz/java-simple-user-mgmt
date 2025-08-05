@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "updated-id",
-    "name": "User API with Authentication",
-    "description": "Extended API collection with authentication and username search",
+    "_postman_id": "combined-collection-id",
+    "name": "Complete User API Collection",
+    "description": "Comprehensive API collection with all features, authentication, and actuator endpoints",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -23,10 +23,8 @@
                 "api",
                 "users"
               ]
-            },
-            "description": "Retrieve all users"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Get User By ID",
@@ -43,10 +41,8 @@
                 "users",
                 "{{userId}}"
               ]
-            },
-            "description": "Retrieve user details by ID"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Create User",
@@ -71,10 +67,8 @@
                 "api",
                 "users"
               ]
-            },
-            "description": "Create a new user"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Update User By ID",
@@ -100,10 +94,8 @@
                 "users",
                 "{{userId}}"
               ]
-            },
-            "description": "Update user details by ID"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Delete User By ID",
@@ -120,10 +112,8 @@
                 "users",
                 "{{userId}}"
               ]
-            },
-            "description": "Delete user by ID"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Get User By Username",
@@ -141,10 +131,8 @@
                 "username",
                 "{{username}}"
               ]
-            },
-            "description": "Retrieve user details by username"
-          },
-          "response": []
+            }
+          }
         }
       ]
     },
@@ -175,10 +163,8 @@
                 "auth",
                 "register"
               ]
-            },
-            "description": "Register a new user"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "User Login",
@@ -204,10 +190,8 @@
                 "auth",
                 "login"
               ]
-            },
-            "description": "Authenticate user and obtain JWT"
-          },
-          "response": []
+            }
+          }
         }
       ]
     },
@@ -228,10 +212,8 @@
                 "actuator",
                 "health"
               ]
-            },
-            "description": "Check application health status including custom UserRepository health indicator"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Application Info",
@@ -247,10 +229,8 @@
                 "actuator",
                 "info"
               ]
-            },
-            "description": "Get application information and metadata"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Application Metrics",
@@ -266,10 +246,8 @@
                 "actuator",
                 "metrics"
               ]
-            },
-            "description": "View available application metrics"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Specific Metric (JVM Memory)",
@@ -286,10 +264,8 @@
                 "metrics",
                 "jvm.memory.used"
               ]
-            },
-            "description": "Get specific metric - JVM memory usage"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Environment Properties",
@@ -305,10 +281,8 @@
                 "actuator",
                 "env"
               ]
-            },
-            "description": "View environment properties and configuration"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Spring Beans",
@@ -324,10 +298,8 @@
                 "actuator",
                 "beans"
               ]
-            },
-            "description": "View all Spring beans in the application context"
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Configuration Properties",
@@ -343,28 +315,8 @@
                 "actuator",
                 "configprops"
               ]
-            },
-            "description": "View configuration properties with their values"
-          },
-          "response": []
-        },
-        {
-          "name": "Actuator Discovery",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/actuator",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "actuator"
-              ]
-            },
-            "description": "Discover all available actuator endpoints"
-          },
-          "response": []
+            }
+          }
         }
       ]
     }
@@ -387,3 +339,4 @@
     }
   ]
 }
+
