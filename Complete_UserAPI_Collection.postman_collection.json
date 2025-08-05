@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "combined-collection-id",
-    "name": "Complete User API Collection",
-    "description": "Comprehensive API collection with all features, authentication, and actuator endpoints",
+    "name": "Complete User API Collection v0.3.0",
+    "description": "Comprehensive API collection with enhanced JWT authentication, 70+ test coverage, and security features",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
