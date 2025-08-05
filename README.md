@@ -6,19 +6,30 @@ A comprehensive RESTful API built with Spring Boot for managing user data with f
 
 ## 🚀 Features
 
+### Core User Management
 - **Create** new users
-- **Read** user data (all users or by ID)
+- **Read** user data (all users, by ID, or by username)
 - **Update** existing users
 - **Delete** users
+- **Username-based search** for efficient user lookup
+
+### Authentication & Security
+- **User registration** with role-based access control (RBAC)
+- **JWT-based authentication** for secure API access
+- **Password encryption** using BCrypt
+- **Role management** (USER, ADMIN, MANAGER)
+- **Username uniqueness validation**
+
+### Technical Features
 - File-based data persistence (JSON format)
 - RESTful API design
 - JSON request/response format
 - **Docker containerization**
 - **Environment-based configuration**
-- **Comprehensive test coverage** (38 tests)
+- **Comprehensive test coverage** (52+ tests)
 - **Production-ready setup**
 - **Health checks**
-- **Postman collection for API testing**
+- **Complete Postman collection for API testing**
 
 ## 📁 Project Structure
 
@@ -78,31 +89,75 @@ Each user has the following properties:
 - `name` (String) - User's full name
 - `email` (String) - User's email address
 - `age` (Integer) - User's age
+- `username` (String) - Unique username for authentication
+- `password` (String) - Encrypted password (write-only)
+- `role` (Role) - User role (USER, ADMIN, MANAGER)
+- `enabled` (Boolean) - Account status (default: true)
 
 ## API Endpoints
 
-### Base URL
-```
-http://localhost:8080/api/users
-```
-
-### Endpoints
+### User Management Endpoints
+**Base URL**: `http://localhost:8080/api/users`
 
 | Method | Endpoint | Description | Request Body | Response |
 |--------|----------|-------------|--------------|----------|
 | GET | `/api/users` | Get all users | None | Array of User objects |
 | GET | `/api/users/{id}` | Get user by ID | None | User object |
+| GET | `/api/users/username/{username}` | Get user by username | None | User object |
 | POST | `/api/users` | Create new user | User object (without ID) | Created User object |
 | PUT | `/api/users/{id}` | Update user by ID | User object | Updated User object |
 | DELETE | `/api/users/{id}` | Delete user by ID | None | No content (204) |
 
-### Example User JSON
+### Authentication Endpoints
+**Base URL**: `http://localhost:8080/api/auth`
 
+| Method | Endpoint | Description | Request Body | Response |
+|--------|----------|-------------|--------------|----------|
+| POST | `/api/auth/register` | Register new user | RegisterRequest | JWT token + user info |
+| POST | `/api/auth/login` | Authenticate user | LoginRequest | JWT token + user info |
+
+### Example Request/Response JSON
+
+#### Basic User JSON
 ```json
 {
   "name": "John Doe",
   "email": "john.doe@example.com",
   "age": 30
+}
+```
+
+#### Registration Request JSON
+```json
+{
+  "name": "New User",
+  "email": "newuser@example.com",
+  "age": 26,
+  "username": "newuser",
+  "password": "securePassword123",
+  "role": "USER"
+}
+```
+
+#### Login Request JSON
+```json
+{
+  "username": "newuser",
+  "password": "securePassword123"
+}
+```
+
+#### Authentication Response JSON
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2OTc2MTYxMDAsImV4cCI6MTY5NzYxOTcwMH0...",
+  "user": {
+    "id": 1,
+    "username": "newuser",
+    "name": "New User",
+    "email": "newuser@example.com",
+    "role": "USER"
+  }
 }
 ```
 
@@ -195,6 +250,35 @@ curl -X PUT http://localhost:8080/api/users/1 \
 curl -X DELETE http://localhost:8080/api/users/1
 ```
 
+#### Get User by Username
+```bash
+curl http://localhost:8080/api/users/username/johndoe
+```
+
+#### Register a New User
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New User",
+    "email": "newuser@example.com",
+    "age": 26,
+    "username": "newuser",
+    "password": "securePassword123",
+    "role": "USER"
+  }'
+```
+
+#### Login User
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "newuser",
+    "password": "securePassword123"
+  }'
+```
+
 ## 💾 Data Persistence
 
 User data is stored in a `users.json` file:
@@ -263,12 +347,24 @@ JAVA_OPTS=-Xmx1024m -Xms512m -XX:+UseG1GC -XX:+OptimizeStringConcat
 ## 📦 Dependencies
 
 The project uses the following key dependencies:
+
+### Core Dependencies
 - **Spring Boot Starter Web** - For REST API functionality
-- **Jackson Databind** - For JSON serialization/deserialization
+- **Jackson Databind** - For JSON serialization/deserialization  
 - **Spring Boot Starter Test** - For comprehensive testing support
+
+### Security & Authentication
+- **Spring Boot Starter Security** - For authentication and authorization
+- **JJWT API** - JWT token creation and validation
+- **JJWT Implementation** - JWT processing implementation
+- **JJWT Jackson** - JSON processing for JWT
+- **BCrypt Password Encoder** - For secure password hashing
+
+### Testing Framework
 - **JUnit 5** - Modern testing framework
 - **Mockito** - Mocking framework for unit tests
 - **Spring Test** - Integration testing support
+- **Spring Security Test** - Security testing utilities
 
 ## Error Handling
 
