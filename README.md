@@ -1,5 +1,7 @@
 # User API - Spring Boot RESTful Service
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-java--simple--user--mgmt-blue)](https://github.com/bayoehafiz/java-simple-user-mgmt)
+
 A comprehensive RESTful API built with Spring Boot for managing user data with full CRUD operations. This project includes Docker support, comprehensive testing, and production-ready configuration.
 
 ## 🚀 Features
