@@ -35,6 +35,17 @@ public class UserController {
         }
     }
 
+    // GET /api/users/username/{username} - Get user by username
+    @GetMapping("/username/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // POST /api/users - Create new user
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
