@@ -31,13 +31,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated()
+        http
+            // CSRF protection disabled for stateless JWT-based API
+            .csrf().disable()
+            
+            // CORS configuration - consider enabling for production
+            .cors().and()
+            
+            // Session management - stateless for JWT
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            
+            // Authorization rules
+            .authorizeRequests()
+                // Public endpoints
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/actuator/health", "/actuator/info").permitAll()
+                // Secured actuator endpoints - only for authenticated users
+                .antMatchers("/actuator/**").authenticated()
+                // All other endpoints require authentication
+                .anyRequest().authenticated()
+            .and()
+            
+            // Security headers
+            .headers()
+                .frameOptions().deny()
+                .contentTypeOptions().and()
+                .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                    .maxAgeInSeconds(31536000)
+                    .includeSubdomains(true))
+                .and();
 
+        // Add JWT authentication filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

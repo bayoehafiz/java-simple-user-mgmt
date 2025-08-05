@@ -75,7 +75,7 @@ A comprehensive RESTful API built with Spring Boot for managing user data with f
 ## 📋 Requirements
 
 ### Local Development
-- Java 11 or higher
+- Java 17 or higher (LTS)
 - Maven 3.6 or higher
 
 ### Docker Development
@@ -331,6 +331,8 @@ APP_PORT=8080
 USER_DATA_FILE=/app/data/users.json
 LOG_LEVEL=INFO
 APP_LOG_LEVEL=DEBUG
+JWT_SECRET=secureJwtSecretKeyForDevelopmentUse123456789
+JWT_EXPIRATION=86400
 JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseG1GC
 ```
 
@@ -341,8 +343,29 @@ APP_PORT=8080
 USER_DATA_FILE=/app/data/users.json
 LOG_LEVEL=WARN
 APP_LOG_LEVEL=ERROR
+JWT_SECRET=${YOUR_SECURE_JWT_SECRET_KEY_HERE}
+JWT_EXPIRATION=86400
+SSL_ENABLED=true
+REQUIRE_SSL=true
 JAVA_OPTS=-Xmx1024m -Xms512m -XX:+UseG1GC -XX:+OptimizeStringConcat
 ```
+
+### Security Configuration
+
+#### JWT Authentication
+- **JWT Secret**: Set via `JWT_SECRET` environment variable (required for production)
+- **Token Expiration**: Configurable via `JWT_EXPIRATION` (default: 24 hours)
+- **Secure Headers**: HSTS, X-Content-Type-Options enabled
+- **Actuator Security**: Sensitive endpoints secured and restricted
+
+#### Production Security Checklist
+- ✅ JWT secrets managed via environment variables
+- ✅ Password encryption using BCrypt
+- ✅ Secure HTTP headers enabled
+- ✅ Non-root Docker container user
+- ✅ Actuator endpoints secured
+- ✅ Input validation with comprehensive constraints
+- ⚠️ SSL/TLS configuration (configure for production)
 
 ## 📦 Dependencies
 
@@ -430,20 +453,28 @@ Import the Postman collection for easy API testing:
 - The file is created automatically if it doesn't exist
 - Docker volumes ensure data persistence across container restarts
 
+## 🎉 Recent Enhancements (v0.2.0)
+
+### Security & Configuration Improvements
+- ✅ **Upgraded to Java 17** (LTS) for better performance and security
+- ✅ **Enhanced JWT Security** with environment-based secret management
+- ✅ **Improved Security Headers** with HSTS and content type options
+- ✅ **Secured Actuator Endpoints** with proper authentication requirements
+- ✅ **Docker Security Hardening** with non-root user and health checks
+- ✅ **Environment Variable Configuration** for production-ready deployments
+
 ## 🚀 Future Enhancements
 
 Potential improvements for production use:
-- Add input validation with Bean Validation
 - Implement proper database integration (PostgreSQL/MySQL)
-- Add authentication and authorization (JWT/OAuth2)
 - Include API documentation with OpenAPI/Swagger
 - Implement pagination for large datasets
 - Add centralized logging and monitoring (ELK stack)
 - Implement caching (Redis)
 - Add rate limiting and API throttling
 - Include metrics and observability (Micrometer/Prometheus)
-- Add CI/CD pipeline configuration
 - Implement database migrations (Flyway/Liquibase)
+- Add comprehensive integration tests for security features
 
 ## License
 

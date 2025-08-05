@@ -6,9 +6,9 @@ This document explains the DevOps/CI-CD pipeline setup for the Java User Managem
 
 Our CI/CD pipeline uses **GitHub Actions** to automate:
 - ✅ Testing and code quality checks
-- 🏗️ Building and packaging
-- 🔒 Security scanning
-- 🐳 Docker image creation
+- 🏗️ Building and packaging with **Java 17**
+- 🔒 Security scanning and JWT secret management
+- 🐳 Docker image creation with security hardening
 - 🚀 Deployment to staging/production
 - 📋 Pull request validation
 - 🏷️ Automated releases
@@ -36,6 +36,22 @@ DOCKER_PASSWORD = your-dockerhub-password-or-token
 ```
 GITHUB_TOKEN = (automatically provided by GitHub Actions)
 ```
+
+### 3. JWT Security Configuration
+
+For production deployments, ensure JWT secrets are properly configured:
+
+```bash
+# Production environment variables (set in deployment environment)
+JWT_SECRET = your-secure-random-jwt-secret-key-here
+JWT_EXPIRATION = 86400  # 24 hours in seconds
+```
+
+**Security Best Practices:**
+- Generate strong, random JWT secrets (minimum 32 characters)
+- Use different secrets for different environments
+- Never commit secrets to version control
+- Rotate secrets regularly in production
 
 ## 🏗️ Pipeline Workflows
 

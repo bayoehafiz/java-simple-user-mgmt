@@ -14,6 +14,8 @@ services:
       - USER_DATA_FILE=${USER_DATA_FILE:-/app/data/users.json}
       - LOGGING_LEVEL_ROOT=${LOG_LEVEL:-INFO}
       - LOGGING_LEVEL_COM_EXAMPLE=${APP_LOG_LEVEL:-DEBUG}
+      - JWT_SECRET=${JWT_SECRET:-secureJwtSecretKeyForDevelopmentUse123456789}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400}
     volumes:
       - userapi_data:/app/data
     networks:
