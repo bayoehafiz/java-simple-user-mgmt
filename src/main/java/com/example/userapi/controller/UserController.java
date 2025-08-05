@@ -1,6 +1,11 @@
 package com.example.userapi.controller;
 
 import com.example.userapi.model.User;
+import com.example.userapi.dto.UserCreateRequest;
+import com.example.userapi.dto.UserUpdateRequest;
+import com.example.userapi.exception.UserNotFoundException;
+import com.example.userapi.exception.DuplicateUserException;
+import javax.validation.Valid;
 import com.example.userapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +36,7 @@ public class UserController {
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         } else {
-            return ResponseEntity.notFound().build();
+            throw new UserNotFoundException(id);
         }
     }
 
@@ -42,31 +47,43 @@ public class UserController {
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         } else {
-            return ResponseEntity.notFound().build();
+            throw new UserNotFoundException("username", username);
         }
     }
 
     // POST /api/users - Create new user
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        try {
-            User savedUser = userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<User> createUser(@Valid @RequestBody UserCreateRequest userRequest) {
+        // Check for duplicate username
+        if(userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
+            throw new DuplicateUserException("username", userRequest.getUsername());
         }
+
+        User user = new User(
+            userRequest.getName(),
+            userRequest.getEmail(),
+            userRequest.getAge(),
+            userRequest.getUsername(),
+            userRequest.getPassword(),
+            userRequest.getRole()
+        );
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     // PUT /api/users/{id} - Update user by ID
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest userRequest) {
         Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isPresent()) {
-            userDetails.setId(id); // Ensure the ID matches
-            User updatedUser = userRepository.save(userDetails);
+            User user = existingUser.get();
+            if(userRequest.getName() != null) user.setName(userRequest.getName());
+            if(userRequest.getEmail() != null) user.setEmail(userRequest.getEmail());
+            if(userRequest.getAge() != null) user.setAge(userRequest.getAge());
+            User updatedUser = userRepository.save(user);
             return ResponseEntity.ok(updatedUser);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new UserNotFoundException(id);
         }
     }
 
@@ -77,7 +94,7 @@ public class UserController {
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new UserNotFoundException(id);
         }
     }
 }
