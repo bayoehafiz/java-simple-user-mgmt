@@ -67,6 +67,12 @@ public class UserRepository {
         }
         return removed;
     }
+    
+    public Optional<User> findByUsername(String username) {
+        return users.stream()
+            .filter(user -> username != null && username.equals(user.getUsername()))
+            .findFirst();
+    }
 
     private void loadUsersFromFile() {
         try {

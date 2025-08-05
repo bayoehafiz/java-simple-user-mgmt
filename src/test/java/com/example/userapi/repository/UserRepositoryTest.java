@@ -124,6 +124,223 @@ class UserRepositoryTest {
     }
 
     @Test
+    void testFindByUsername() {
+        // Given
+        User user1 = new User(null, "John Doe", "john@example.com", 30);
+        user1.setUsername("johndoe");
+        User user2 = new User(null, "Jane Smith", "jane@example.com", 25);
+        user2.setUsername("janesmith");
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername("johndoe");
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals("John Doe", foundUser.get().getName());
+        assertEquals("johndoe", foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameNotFound() {
+        // When
+        Optional<User> foundUser = userRepository.findByUsername("nonexistentuser");
+
+        // Then
+        assertFalse(foundUser.isPresent());
+    }
+
+    @Test
+    void testFindByUsernameWithNullUsername() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername("testuser");
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername(null);
+
+        // Then
+        assertFalse(foundUser.isPresent());
+    }
+
+    @Test
+    void testFindByUsernameWithEmptyString() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername("");
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername("");
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals("", foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameWithWhitespace() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername(" testuser ");
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername(" testuser ");
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals(" testuser ", foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameWithSpecialCharacters() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername("test@user#123");
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername("test@user#123");
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals("test@user#123", foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameWithUnicodeCharacters() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername("tëst_üser_123");
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername("tëst_üser_123");
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals("tëst_üser_123", foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameCaseSensitive() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername("TestUser");
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUserExact = userRepository.findByUsername("TestUser");
+        Optional<User> foundUserLower = userRepository.findByUsername("testuser");
+        Optional<User> foundUserUpper = userRepository.findByUsername("TESTUSER");
+
+        // Then
+        assertTrue(foundUserExact.isPresent());
+        assertFalse(foundUserLower.isPresent());
+        assertFalse(foundUserUpper.isPresent());
+    }
+
+    @Test
+    void testFindByUsernameWithMultipleUsersReturnFirst() {
+        // Given
+        User user1 = new User(null, "User 1", "user1@example.com", 25);
+        user1.setUsername("testuser");
+        User user2 = new User(null, "User 2", "user2@example.com", 30);
+        user2.setUsername("testuser2");
+        User user3 = new User(null, "User 3", "user3@example.com", 35);
+        user3.setUsername("testuser3");
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername("testuser");
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals("User 1", foundUser.get().getName());
+        assertEquals("testuser", foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameAfterUserDeletion() {
+        // Given
+        User user1 = new User(null, "User 1", "user1@example.com", 25);
+        user1.setUsername("user1");
+        User user2 = new User(null, "User 2", "user2@example.com", 30);
+        user2.setUsername("user2");
+
+        User savedUser1 = userRepository.save(user1);
+        userRepository.save(user2);
+
+        // When - Delete first user
+        userRepository.deleteById(savedUser1.getId());
+        Optional<User> foundDeletedUser = userRepository.findByUsername("user1");
+        Optional<User> foundExistingUser = userRepository.findByUsername("user2");
+
+        // Then
+        assertFalse(foundDeletedUser.isPresent());
+        assertTrue(foundExistingUser.isPresent());
+        assertEquals("User 2", foundExistingUser.get().getName());
+    }
+
+    @Test
+    void testFindByUsernameAfterUserUpdate() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername("originaluser");
+        User savedUser = userRepository.save(user);
+
+        // When - Update username
+        savedUser.setUsername("updateduser");
+        userRepository.save(savedUser);
+
+        Optional<User> foundOriginal = userRepository.findByUsername("originaluser");
+        Optional<User> foundUpdated = userRepository.findByUsername("updateduser");
+
+        // Then
+        assertFalse(foundOriginal.isPresent());
+        assertTrue(foundUpdated.isPresent());
+        assertEquals("Test User", foundUpdated.get().getName());
+        assertEquals("updateduser", foundUpdated.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameWithLongUsername() {
+        // Given
+        String longUsername = "a".repeat(255);
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername(longUsername);
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername(longUsername);
+
+        // Then
+        assertTrue(foundUser.isPresent());
+        assertEquals(longUsername, foundUser.get().getUsername());
+    }
+
+    @Test
+    void testFindByUsernameWithNullUsernameInDatabase() {
+        // Given
+        User user = new User(null, "Test User", "test@example.com", 25);
+        user.setUsername(null);
+        userRepository.save(user);
+
+        // When
+        Optional<User> foundUser = userRepository.findByUsername(null);
+
+        // Then - Should not find user with null username when searching with null
+        assertFalse(foundUser.isPresent());
+    }
+
+    @Test
     void testDeleteByIdNotFound() {
         // When
         boolean deleted = userRepository.deleteById(999L);
